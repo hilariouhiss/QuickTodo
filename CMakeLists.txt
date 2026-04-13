@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
 qt_standard_project_setup(REQUIRES 6.10)
 
 qt_add_executable(${PROJECT_NAME}
@@ -32,6 +35,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick
+        fmt::fmt-header-only
+        spdlog::spdlog_header_only
 )
 
 install(TARGETS ${PROJECT_NAME}
