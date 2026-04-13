@@ -1,0 +1,11 @@
+﻿* text=auto eol=lf
+
+# image files
+*.jpg binary
+*.png binary
+*.ico binary
+
+# library files
+*.dll binary
+*.lib binary
+*.a binary
