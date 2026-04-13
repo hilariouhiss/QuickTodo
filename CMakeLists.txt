@@ -5,7 +5,7 @@ project(underlying-test-platform VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
@@ -14,6 +14,9 @@ qt_standard_project_setup(REQUIRES 6.10)
 
 qt_add_executable(${PROJECT_NAME}
         main.cpp
+        src/model/AppModel.cpp
+        src/viewmodel/MainViewModel.cpp
+        src/app/AppContainer.cpp
 )
 
 qt_add_qml_module(${PROJECT_NAME}
@@ -35,8 +38,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick
+        Qt6::QuickControls2
         fmt::fmt-header-only
         spdlog::spdlog_header_only
+)
+
+target_include_directories(${PROJECT_NAME}
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 install(TARGETS ${PROJECT_NAME}
