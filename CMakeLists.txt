@@ -15,8 +15,11 @@ qt_standard_project_setup(REQUIRES 6.10)
 qt_add_executable(${PROJECT_NAME}
         main.cpp
         src/model/AppModel.cpp
+        src/model/task/Task.cpp
+        src/model/repository/TaskRepository.cpp
         src/viewmodel/MainViewModel.cpp
         src/app/AppContainer.cpp
+        src/infrastructure/database/DatabaseManager.cpp
         src/infrastructure/logging/Logging.cpp
 )
 

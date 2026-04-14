@@ -18,6 +18,11 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     AppContainer appContainer;
+    if (appContainer.databaseReady()) {
+        app::logging::info("Database ready");
+    } else {
+        app::logging::error("Database not ready: {}", appContainer.databaseError().toStdString());
+    }
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
