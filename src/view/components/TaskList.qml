@@ -6,8 +6,11 @@ Item {
     id: root
 
     property var tasks: []
+    property var statusOptions: []
+    property var taskFields: ({})
 
     signal statusUpdateRequested(int taskId, int status)
+
     signal removeRequested(int taskId)
 
     Label {
@@ -31,6 +34,8 @@ Item {
             required property var modelData
             task: modelData
             listWidth: taskListView.width
+            statusOptions: root.statusOptions
+            taskFields: root.taskFields
             onStatusUpdateRequested: function (taskId, status) {
                 root.statusUpdateRequested(taskId, status)
             }

@@ -2,8 +2,11 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QVariantList>
 #include <QVariantMap>
+
+#include <functional>
 
 class AppModel;
 class TaskRepository;
@@ -18,6 +21,8 @@ class MainViewModel final : public QObject
     Q_PROPERTY(QString pageTitle READ pageTitle CONSTANT FINAL)
     Q_PROPERTY(QVariantList tasks READ tasks NOTIFY tasksChanged FINAL)
     Q_PROPERTY(QString lastDbError READ lastDbError NOTIFY lastDbErrorChanged FINAL)
+    Q_PROPERTY(QStringList taskStatusOptions READ taskStatusOptions CONSTANT FINAL)
+    Q_PROPERTY(QVariantMap taskFields READ taskFields CONSTANT FINAL)
 
 public:
     explicit MainViewModel(AppModel *appModel,
@@ -28,6 +33,8 @@ public:
     QString pageTitle() const;
     QVariantList tasks() const;
     QString lastDbError() const;
+    QStringList taskStatusOptions() const;
+    QVariantMap taskFields() const;
 
     Q_INVOKABLE void incrementCounter();
     Q_INVOKABLE void resetCounter();
@@ -49,12 +56,11 @@ signals:
     void errorOccurred(const QString &message);
 
 private:
-    void onTaskMutationSucceeded();
+    bool runTaskMutation(const std::function<bool()> &mutation);
     void onChildOperationFailed(const QString &operation, const QString &detail, bool notifyUser);
 
     AppModel *m_appModel = nullptr;
     TaskListViewModel *m_taskListViewModel = nullptr;
     TaskActionViewModel *m_taskActionViewModel = nullptr;
     GlobalStateViewModel *m_globalStateViewModel = nullptr;
-    bool m_lastRoutedRefreshSucceeded = true;
 };

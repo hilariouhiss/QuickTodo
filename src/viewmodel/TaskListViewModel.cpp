@@ -33,6 +33,11 @@ bool TaskListViewModel::loadTasks()
     return true;
 }
 
+bool TaskListViewModel::reloadAfterMutation()
+{
+    return loadTasks();
+}
+
 QVariantMap TaskListViewModel::get(qint64 id)
 {
     const auto task = m_taskRepository->getTaskById(id);
@@ -63,16 +68,16 @@ void TaskListViewModel::setTasks(const QVariantList &tasks)
 QVariantMap TaskListViewModel::taskToMap(const Task &task) const
 {
     QVariantMap data;
-    data.insert(QStringLiteral("id"), task.id);
-    data.insert(QStringLiteral("name"), task.name);
-    data.insert(QStringLiteral("description"), task.description);
-    data.insert(QStringLiteral("dueAt"), task.dueAt.toString(Qt::ISODate));
-    data.insert(QStringLiteral("status"), taskStatusToInt(task.status));
-    data.insert(QStringLiteral("statusText"), taskStatusToString(task.status));
-    data.insert(QStringLiteral("createdAt"), task.createdAt.toString(Qt::ISODate));
-    data.insert(QStringLiteral("completedAt"),
+    data.insert(QString::fromLatin1(task::field::Id), task.id);
+    data.insert(QString::fromLatin1(task::field::Name), task.name);
+    data.insert(QString::fromLatin1(task::field::Description), task.description);
+    data.insert(QString::fromLatin1(task::field::DueAt), task.dueAt.toString(Qt::ISODate));
+    data.insert(QString::fromLatin1(task::field::Status), taskStatusToInt(task.status));
+    data.insert(QString::fromLatin1(task::field::StatusText), taskStatusToString(task.status));
+    data.insert(QString::fromLatin1(task::field::CreatedAt), task.createdAt.toString(Qt::ISODate));
+    data.insert(QString::fromLatin1(task::field::CompletedAt),
                 task.completedAt.isValid() ? QVariant(task.completedAt.toString(Qt::ISODate))
                                            : QVariant());
-    data.insert(QStringLiteral("autoDelay"), task.autoDelay);
+    data.insert(QString::fromLatin1(task::field::AutoDelay), task.autoDelay);
     return data;
 }

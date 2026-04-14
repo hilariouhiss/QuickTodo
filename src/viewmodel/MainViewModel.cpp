@@ -3,6 +3,7 @@
 #include "infrastructure/logging/Logging.h"
 #include "model/AppModel.h"
 #include "model/repository/TaskRepository.h"
+#include "model/task/Task.h"
 #include "viewmodel/GlobalStateViewModel.h"
 #include "viewmodel/TaskActionViewModel.h"
 #include "viewmodel/TaskListViewModel.h"
@@ -30,10 +31,6 @@ MainViewModel::MainViewModel(AppModel *appModel, TaskRepository *taskRepository,
             &GlobalStateViewModel::errorOccurred,
             this,
             &MainViewModel::errorOccurred);
-    connect(m_taskActionViewModel,
-            &TaskActionViewModel::taskMutationSucceeded,
-            this,
-            &MainViewModel::onTaskMutationSucceeded);
     connect(m_taskActionViewModel,
             &TaskActionViewModel::operationFailed,
             this,
@@ -66,6 +63,16 @@ QString MainViewModel::lastDbError() const
     return m_globalStateViewModel->lastError();
 }
 
+QStringList MainViewModel::taskStatusOptions() const
+{
+    return taskStatusDisplayOptions();
+}
+
+QVariantMap MainViewModel::taskFields() const
+{
+    return taskFieldMap();
+}
+
 void MainViewModel::incrementCounter()
 {
     m_appModel->setCounter(m_appModel->counter() + 1);
@@ -84,11 +91,9 @@ bool MainViewModel::create(const QString &name,
                            const int status,
                            const bool autoDelay)
 {
-    m_lastRoutedRefreshSucceeded = true;
-    if (!m_taskActionViewModel->create(name, description, dueAtIso, status, autoDelay)) {
-        return false;
-    }
-    return m_lastRoutedRefreshSucceeded;
+    return runTaskMutation([&] {
+        return m_taskActionViewModel->create(name, description, dueAtIso, status, autoDelay);
+    });
 }
 
 bool MainViewModel::loadTasks()
@@ -112,31 +117,30 @@ QVariantList MainViewModel::getAll()
 
 bool MainViewModel::updateStatus(qint64 id, int status)
 {
-    m_lastRoutedRefreshSucceeded = true;
-    if (!m_taskActionViewModel->updateStatus(id, status)) {
-        return false;
-    }
-    return m_lastRoutedRefreshSucceeded;
+    return runTaskMutation([&] { return m_taskActionViewModel->updateStatus(id, status); });
 }
 
 bool MainViewModel::remove(qint64 id)
 {
-    m_lastRoutedRefreshSucceeded = true;
-    if (!m_taskActionViewModel->remove(id)) {
-        return false;
-    }
-    return m_lastRoutedRefreshSucceeded;
+    return runTaskMutation([&] { return m_taskActionViewModel->remove(id); });
 }
 
-void MainViewModel::onTaskMutationSucceeded()
+bool MainViewModel::runTaskMutation(const std::function<bool()> &mutation)
 {
-    m_globalStateViewModel->clearError();
-    m_lastRoutedRefreshSucceeded = m_taskListViewModel->loadTasks();
-    if (!m_lastRoutedRefreshSucceeded) {
+    if (!mutation()) {
+        return false;
+    }
+
+    const bool refreshed = m_taskListViewModel->reloadAfterMutation();
+    if (!refreshed) {
         app::logging::error("Reload tasks failed after mutation: {}",
                             m_globalStateViewModel->lastError().toStdString());
+        return false;
     }
+
+    m_globalStateViewModel->clearError();
     app::logging::info("Task mutation succeeded and routed by MainViewModel");
+    return true;
 }
 
 void MainViewModel::onChildOperationFailed(const QString &operation,

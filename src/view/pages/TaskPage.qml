@@ -22,6 +22,8 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             tasks: vm.tasks
+            statusOptions: vm.taskStatusOptions
+            taskFields: vm.taskFields
             onStatusUpdateRequested: function (taskId, status) {
                 vm.updateStatus(taskId, status)
             }

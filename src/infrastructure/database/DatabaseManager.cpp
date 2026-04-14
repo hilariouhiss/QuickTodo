@@ -9,6 +9,7 @@
 #include <QVariant>
 
 #include "infrastructure/logging/Logging.h"
+#include "model/task/Task.h"
 
 #include <array>
 
@@ -27,7 +28,14 @@ CREATE TABLE IF NOT EXISTS tasks (
 )";
 
 constexpr std::array<const char *, 8> kRequiredColumns
-    = {"id", "name", "description", "due_at", "status", "created_at", "completed_at", "auto_delay"};
+    = {task::db::Id,
+       task::db::Name,
+       task::db::Description,
+       task::db::DueAt,
+       task::db::Status,
+       task::db::CreatedAt,
+       task::db::CompletedAt,
+       task::db::AutoDelay};
 } // namespace
 
 DatabaseManager::DatabaseManager()

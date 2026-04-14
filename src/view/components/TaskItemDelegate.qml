@@ -7,8 +7,11 @@ Rectangle {
 
     required property var task
     required property int listWidth
+    required property var statusOptions
+    required property var taskFields
 
     signal statusUpdateRequested(int taskId, int status)
+
     signal removeRequested(int taskId)
 
     width: listWidth
@@ -29,32 +32,32 @@ Rectangle {
             Layout.fillWidth: true
 
             Label {
-                text: root.task.name
+                text: root.task[root.taskFields.name]
                 font.bold: true
                 Layout.fillWidth: true
             }
 
             ComboBox {
                 id: statusCombo
-                model: ["未开始", "进行中", "挂起", "已完成"]
-                currentIndex: Number(root.task.status)
+                model: root.statusOptions
+                currentIndex: Number(root.task[root.taskFields.status])
                 onActivated: function (index) {
-                    root.statusUpdateRequested(Number(root.task.id), index)
+                    root.statusUpdateRequested(Number(root.task[root.taskFields.id]), index)
                 }
             }
 
             Button {
                 text: "删除"
-                onClicked: root.removeRequested(Number(root.task.id))
+                onClicked: root.removeRequested(Number(root.task[root.taskFields.id]))
             }
         }
 
         Label {
-            text: "状态: " + root.task.statusText + "（" + root.task.status + "）"
+            text: "状态: " + root.task[root.taskFields.statusText] + "（" + root.task[root.taskFields.status] + "）"
         }
 
         Label {
-            text: "预计完成时间: " + root.task.dueAt
+            text: "预计完成时间: " + root.task[root.taskFields.dueAt]
         }
     }
 }

@@ -53,7 +53,6 @@ bool TaskActionViewModel::create(const QString &name,
         return false;
     }
 
-    emit taskMutationSucceeded();
     return true;
 }
 
@@ -91,7 +90,6 @@ bool TaskActionViewModel::updateStatus(qint64 id, int status)
         return false;
     }
 
-    emit taskMutationSucceeded();
     return true;
 }
 
@@ -102,6 +100,5 @@ bool TaskActionViewModel::remove(qint64 id)
         return false;
     }
 
-    emit taskMutationSucceeded();
     return true;
 }

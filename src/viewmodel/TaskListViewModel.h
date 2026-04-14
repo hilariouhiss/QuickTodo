@@ -17,6 +17,7 @@ public:
 
     QVariantList tasks() const;
     bool loadTasks();
+    bool reloadAfterMutation();
     QVariantMap get(qint64 id);
     QVariantList getAll();
 

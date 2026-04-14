@@ -223,15 +223,15 @@ void TaskRepository::setLastError(const QString &errorText) const
 std::optional<Task> TaskRepository::parseTaskFromQuery(const QSqlQuery &query) const
 {
     Task task;
-    task.id = query.value(QStringLiteral("id")).toLongLong();
-    task.name = query.value(QStringLiteral("name")).toString();
-    task.description = query.value(QStringLiteral("description")).toString();
-    task.dueAt = fromIso(query.value(QStringLiteral("due_at")).toString());
-    task.createdAt = fromIso(query.value(QStringLiteral("created_at")).toString());
-    task.completedAt = fromIso(query.value(QStringLiteral("completed_at")).toString());
-    task.autoDelay = query.value(QStringLiteral("auto_delay")).toInt() != 0;
+    task.id = query.value(QString::fromLatin1(task::db::Id)).toLongLong();
+    task.name = query.value(QString::fromLatin1(task::db::Name)).toString();
+    task.description = query.value(QString::fromLatin1(task::db::Description)).toString();
+    task.dueAt = fromIso(query.value(QString::fromLatin1(task::db::DueAt)).toString());
+    task.createdAt = fromIso(query.value(QString::fromLatin1(task::db::CreatedAt)).toString());
+    task.completedAt = fromIso(query.value(QString::fromLatin1(task::db::CompletedAt)).toString());
+    task.autoDelay = query.value(QString::fromLatin1(task::db::AutoDelay)).toInt() != 0;
 
-    const int statusValue = query.value(QStringLiteral("status")).toInt();
+    const int statusValue = query.value(QString::fromLatin1(task::db::Status)).toInt();
     const auto status = taskStatusFromInt(statusValue);
     if (!status.has_value()) {
         setLastError(QStringLiteral("读取到非法状态值: %1").arg(statusValue));

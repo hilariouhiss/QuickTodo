@@ -18,7 +18,9 @@
 - `TaskListViewModel` 负责列表加载与列表状态维护。
 - `TaskActionViewModel` 负责创建/更新状态/删除等写操作。
 - `GlobalStateViewModel` 负责统一错误收口与全局错误输出。
+- 任务字段 key 与状态选项由 C++ 统一导出，QML 仅消费 `taskFields`/`taskStatusOptions`，避免双源维护。
 - `main.cpp` 负责生命周期与依赖注入（`ContextProperty: mainViewModel`）。
+- 数据库 schema 校验在 `DatabaseManager::initializeDefaultDatabase()` 内单一路径完成，容器层只消费结果。
 
 ## 后续扩展
 - 新业务先判断读写职责：

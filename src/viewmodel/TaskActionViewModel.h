@@ -21,7 +21,6 @@ public:
     bool remove(qint64 id);
 
 signals:
-    void taskMutationSucceeded();
     void operationFailed(const QString &operation, const QString &detail, bool notifyUser);
 
 private:

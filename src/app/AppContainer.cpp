@@ -13,15 +13,8 @@ AppContainer::AppContainer()
         m_databaseError = m_databaseManager.lastError();
         app::logging::error("Database bootstrap failed: {}", m_databaseError.toStdString());
     } else {
-        m_databaseReady = m_databaseManager.validateSchema();
-        if (!m_databaseReady) {
-            m_databaseError = m_databaseManager.lastError();
-            app::logging::error("Database schema validation failed: {}",
-                                m_databaseError.toStdString());
-        } else {
-            m_databaseError.clear();
-            app::logging::info("Database bootstrap and validation completed");
-        }
+        m_databaseError.clear();
+        app::logging::info("Database bootstrap and validation completed");
     }
 
     app::logging::info("MainViewModel orchestrates child view models");
