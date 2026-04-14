@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Force MSVC to treat source/execution charset as UTF-8 to avoid mojibake in build pipeline.
-if(MSVC)
+if (MSVC)
     add_compile_options(/utf-8)
-endif()
+endif ()
 
 find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Sql)
 
@@ -32,7 +32,7 @@ qt_add_executable(${PROJECT_NAME}
 qt_add_qml_module(${PROJECT_NAME}
         URI quick_todo
         QML_FILES
-        Main.qml
+        src/view/Main.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -72,10 +72,10 @@ if (WIN32)
                 COMMENT "Running windeployqt for ${PROJECT_NAME}"
                 VERBATIM
         )
-    else()
+    else ()
         message(WARNING "windeployqt not found; Qt runtime/QML plugins may be missing at runtime.")
-    endif()
-endif()
+    endif ()
+endif ()
 
 install(TARGETS ${PROJECT_NAME}
         BUNDLE DESTINATION .
