@@ -1,6 +1,12 @@
 root = true
 
-[*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,ixx,cppm,inl,ipp,tlh,tli}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
 
 cpp_generate_documentation_comments = doxygen_triple_slash
 
@@ -12,3 +18,27 @@ cpp_include_cleanup_optimize_unused_error_tag_type = none
 cpp_include_cleanup_sort_after_edits = false
 cpp_include_cleanup_format_after_edits = false
 cpp_sort_includes_error_tag_type = none
+
+[*.qml]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[CMakeLists.txt]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.cmake]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
