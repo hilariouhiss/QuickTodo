@@ -5,27 +5,6 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property var reportError
-    property var tasks: []
-
-    function notifyError(fallbackText) {
-        const dbError = mainViewModel.lastDbError
-        const message = dbError !== "" ? dbError : fallbackText
-        if (message === "") {
-            return
-        }
-        if (typeof root.reportError === "function") {
-            root.reportError(message)
-        }
-    }
-
-    function reloadTasks() {
-        root.tasks = mainViewModel.getAll()
-        if (mainViewModel.lastDbError !== "") {
-            notifyError("加载任务失败")
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -41,25 +20,17 @@ Item {
         TaskList {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            tasks: root.tasks
+            tasks: mainViewModel.tasks
             onStatusUpdateRequested: function (taskId, status) {
-                const ok = mainViewModel.updateStatus(taskId, status)
-                if (!ok) {
-                    notifyError("更新状态失败")
-                    return
-                }
-                reloadTasks()
+                mainViewModel.updateStatus(taskId, status)
             }
             onRemoveRequested: function (taskId) {
-                const ok = mainViewModel.remove(taskId)
-                if (!ok) {
-                    notifyError("删除任务失败")
-                    return
-                }
-                reloadTasks()
+                mainViewModel.remove(taskId)
             }
         }
     }
 
-    Component.onCompleted: reloadTasks()
+    Component.onCompleted: {
+        mainViewModel.loadTasks()
+    }
 }

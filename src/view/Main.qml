@@ -15,9 +15,14 @@ Window {
         id: stackView
         anchors.fill: parent
         initialItem: TaskPage {
-            reportError: function (message) {
-                errorDialog.showError(message)
-            }
+        }
+    }
+
+    Connections {
+        target: mainViewModel
+
+        function onErrorOccurred(message) {
+            errorDialog.showError(message)
         }
     }
 }
