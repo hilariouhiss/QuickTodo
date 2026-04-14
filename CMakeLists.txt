@@ -33,6 +33,10 @@ qt_add_qml_module(${PROJECT_NAME}
         URI quick_todo
         QML_FILES
         src/view/Main.qml
+        src/view/pages/TaskPage.qml
+        src/view/components/TaskList.qml
+        src/view/components/TaskItemDelegate.qml
+        src/view/components/GlobalErrorDialog.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
