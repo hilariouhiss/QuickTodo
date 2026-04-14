@@ -58,6 +58,25 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+if (WIN32)
+    # Deploy Qt runtime + QML plugins (e.g. QtQuick.Controls) next to exe for IDE run.
+    get_target_property(_qt_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qt_qmake_executable}" DIRECTORY)
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+    if (WINDEPLOYQT_EXECUTABLE)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+                --qmldir "${CMAKE_CURRENT_SOURCE_DIR}"
+                "$<TARGET_FILE:${PROJECT_NAME}>"
+                COMMENT "Running windeployqt for ${PROJECT_NAME}"
+                VERBATIM
+        )
+    else()
+        message(WARNING "windeployqt not found; Qt runtime/QML plugins may be missing at runtime.")
+    endif()
+endif()
+
 install(TARGETS ${PROJECT_NAME}
         BUNDLE DESTINATION .
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
