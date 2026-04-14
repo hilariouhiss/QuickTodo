@@ -23,7 +23,7 @@ int MainViewModel::counter() const
 
 QString MainViewModel::pageTitle() const
 {
-    return QStringLiteral("Underlying Test Platform");
+    return QStringLiteral("Quick Todo");
 }
 
 QString MainViewModel::lastDbError() const

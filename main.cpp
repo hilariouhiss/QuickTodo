@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("mainViewModel", appContainer.mainViewModel());
-    app::logging::info("Loading QML module: underlying_test_platform/Main");
-    engine.loadFromModule("underlying_test_platform", "Main");
+    app::logging::info("Loading QML module: quick_todo/Main");
+    engine.loadFromModule("quick_todo", "Main");
     app::logging::info("Application started");
 
     const int exitCode = QCoreApplication::exec();

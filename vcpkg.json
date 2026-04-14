@@ -1,6 +1,6 @@
 {
-  "name": "underlying-test-platform",
-  "version-string": "2.0.0",
+  "name": "quick-todo",
+  "version-string": "0.0.1",
   "dependencies": [
     "fmt",
     "spdlog"
