@@ -2,10 +2,12 @@ import QtQuick
 import QtQuick.Controls
 
 Window {
+    readonly property var vm: mainViewModel
+
     width: 960
     height: 680
     visible: true
-    title: mainViewModel.pageTitle
+    title: vm.pageTitle
 
     GlobalErrorDialog {
         id: errorDialog
@@ -19,7 +21,7 @@ Window {
     }
 
     Connections {
-        target: mainViewModel
+        target: vm
 
         function onErrorOccurred(message) {
             errorDialog.showError(message)

@@ -7,6 +7,9 @@
 
 class AppModel;
 class TaskRepository;
+class TaskListViewModel;
+class TaskActionViewModel;
+class GlobalStateViewModel;
 
 class MainViewModel final : public QObject
 {
@@ -46,13 +49,12 @@ signals:
     void errorOccurred(const QString &message);
 
 private:
-    void setLastDbError(const QString &value);
-    bool reportOperationError(const QString &operation, const QString &detail = QString());
-    void setTasks(const QVariantList &tasks);
-    QVariantMap taskToMap(const class Task &task) const;
+    void onTaskMutationSucceeded();
+    void onChildOperationFailed(const QString &operation, const QString &detail, bool notifyUser);
 
     AppModel *m_appModel = nullptr;
-    TaskRepository *m_taskRepository = nullptr;
-    QVariantList m_tasks;
-    QString m_lastDbError;
+    TaskListViewModel *m_taskListViewModel = nullptr;
+    TaskActionViewModel *m_taskActionViewModel = nullptr;
+    GlobalStateViewModel *m_globalStateViewModel = nullptr;
+    bool m_lastRoutedRefreshSucceeded = true;
 };

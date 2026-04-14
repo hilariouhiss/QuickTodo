@@ -24,6 +24,9 @@ qt_add_executable(${PROJECT_NAME}
         src/model/task/Task.cpp
         src/model/repository/TaskRepository.cpp
         src/viewmodel/MainViewModel.cpp
+        src/viewmodel/TaskListViewModel.cpp
+        src/viewmodel/TaskActionViewModel.cpp
+        src/viewmodel/GlobalStateViewModel.cpp
         src/app/AppContainer.cpp
         src/infrastructure/database/DatabaseManager.cpp
         src/infrastructure/logging/Logging.cpp

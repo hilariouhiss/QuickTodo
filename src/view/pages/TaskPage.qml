@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 Item {
     id: root
+    readonly property var vm: mainViewModel
 
     ColumnLayout {
         anchors.fill: parent
@@ -11,7 +12,7 @@ Item {
         spacing: 12
 
         Label {
-            text: mainViewModel.pageTitle
+            text: vm.pageTitle
             font.pixelSize: 24
             font.bold: true
             Layout.fillWidth: true
@@ -20,17 +21,17 @@ Item {
         TaskList {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            tasks: mainViewModel.tasks
+            tasks: vm.tasks
             onStatusUpdateRequested: function (taskId, status) {
-                mainViewModel.updateStatus(taskId, status)
+                vm.updateStatus(taskId, status)
             }
             onRemoveRequested: function (taskId) {
-                mainViewModel.remove(taskId)
+                vm.remove(taskId)
             }
         }
     }
 
     Component.onCompleted: {
-        mainViewModel.loadTasks()
+        vm.loadTasks()
     }
 }

@@ -24,6 +24,7 @@ AppContainer::AppContainer()
         }
     }
 
+    app::logging::info("MainViewModel orchestrates child view models");
     app::logging::info("AppContainer initialized");
 }
 
