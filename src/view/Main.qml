@@ -16,8 +16,7 @@ Window {
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: TaskPage {
-        }
+        initialItem: TaskPage {}
     }
 
     Connections {

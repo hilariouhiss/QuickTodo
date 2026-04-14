@@ -8,7 +8,6 @@ Item {
     property var tasks: []
 
     signal statusUpdateRequested(int taskId, int status)
-
     signal removeRequested(int taskId)
 
     Label {

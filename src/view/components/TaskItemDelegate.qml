@@ -9,7 +9,6 @@ Rectangle {
     required property int listWidth
 
     signal statusUpdateRequested(int taskId, int status)
-
     signal removeRequested(int taskId)
 
     width: listWidth

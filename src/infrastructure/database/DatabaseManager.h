@@ -21,8 +21,6 @@ private:
     bool ensureIndexes(const QSqlDatabase &db);
     void setLastError(const QString &errorText);
     QString resolveDatabasePath(const QString &dbFilePath) const;
-
-private:
     QString m_defaultConnectionName;
     QString m_lastError;
 };

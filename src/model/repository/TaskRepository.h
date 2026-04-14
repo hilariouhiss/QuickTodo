@@ -29,8 +29,6 @@ private:
     QSqlDatabase database() const;
     void setLastError(const QString &errorText) const;
     std::optional<Task> parseTaskFromQuery(const QSqlQuery &query) const;
-
-private:
     QString m_connectionName;
     mutable QString m_lastError;
 };
