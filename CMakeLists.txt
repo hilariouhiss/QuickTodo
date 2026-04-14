@@ -17,6 +17,7 @@ qt_add_executable(${PROJECT_NAME}
         src/model/AppModel.cpp
         src/viewmodel/MainViewModel.cpp
         src/app/AppContainer.cpp
+        src/infrastructure/logging/Logging.cpp
 )
 
 qt_add_qml_module(${PROJECT_NAME}

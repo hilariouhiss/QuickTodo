@@ -1,5 +1,6 @@
 #include "viewmodel/MainViewModel.h"
 
+#include "infrastructure/logging/Logging.h"
 #include "model/AppModel.h"
 
 MainViewModel::MainViewModel(AppModel *appModel, QObject *parent)
@@ -8,6 +9,7 @@ MainViewModel::MainViewModel(AppModel *appModel, QObject *parent)
 {
     Q_ASSERT(m_appModel != nullptr);
     connect(m_appModel, &AppModel::counterChanged, this, &MainViewModel::counterChanged);
+    app::logging::info("MainViewModel initialized");
 }
 
 int MainViewModel::counter() const
@@ -23,9 +25,11 @@ QString MainViewModel::pageTitle() const
 void MainViewModel::incrementCounter()
 {
     m_appModel->setCounter(m_appModel->counter() + 1);
+    app::logging::info("Counter incremented to {}", m_appModel->counter());
 }
 
 void MainViewModel::resetCounter()
 {
     m_appModel->setCounter(0);
+    app::logging::info("Counter reset");
 }
