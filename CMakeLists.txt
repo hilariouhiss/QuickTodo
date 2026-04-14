@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Force MSVC to treat source/execution charset as UTF-8 to avoid mojibake in build pipeline.
 if (MSVC)
     add_compile_options(/utf-8)
+    add_compile_options(/EHsc)
 endif ()
 
 find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Sql)
