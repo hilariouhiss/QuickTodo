@@ -8,6 +8,7 @@ Rectangle {
     required property var task
     required property int listWidth
     required property var statusOptions
+    // Field names are supplied by the viewmodel so the delegate stays agnostic to backend key changes.
     required property var taskFields
 
     signal statusUpdateRequested(int taskId, int status)
@@ -40,6 +41,7 @@ Rectangle {
             ComboBox {
                 id: statusCombo
                 model: root.statusOptions
+                // The option order is expected to stay aligned with the numeric status enum exposed by the VM.
                 currentIndex: Number(root.task[root.taskFields.status])
                 onActivated: function (index) {
                     root.statusUpdateRequested(Number(root.task[root.taskFields.id]), index)

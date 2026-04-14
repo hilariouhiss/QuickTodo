@@ -33,6 +33,7 @@ qt_add_executable(${PROJECT_NAME}
         src/infrastructure/logging/Logging.cpp
 )
 
+# Keep the QML entry list centralized so module packaging and deployment stay in sync.
 set(QUICKTODO_QML_FILES
         src/view/Main.qml
         src/view/pages/TaskPage.qml
@@ -41,6 +42,7 @@ set(QUICKTODO_QML_FILES
         src/view/components/GlobalErrorDialog.qml
 )
 
+# Register the QML module explicitly so Qt can bundle these files into the target resources.
 qt_add_qml_module(${PROJECT_NAME}
         URI quick_todo
         QML_FILES

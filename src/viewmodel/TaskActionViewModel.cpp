@@ -5,6 +5,11 @@
 
 #include <QDateTime>
 
+/**
+ * @brief Wraps repository writes with UI-facing validation and error signaling.
+ * @param taskRepository Repository used for task mutations.
+ * @param parent Owning QObject parent.
+ */
 TaskActionViewModel::TaskActionViewModel(TaskRepository *taskRepository, QObject *parent)
     : QObject(parent)
     , m_taskRepository(taskRepository)
@@ -12,6 +17,15 @@ TaskActionViewModel::TaskActionViewModel(TaskRepository *taskRepository, QObject
     Q_ASSERT(m_taskRepository != nullptr);
 }
 
+/**
+ * @brief Validates form input and creates a new task in the repository.
+ * @param name Required task name from QML.
+ * @param description Optional task description from QML.
+ * @param dueAtIso Due date in ISO8601 format.
+ * @param status Numeric status value expected by `TaskStatus`.
+ * @param autoDelay Whether automatic delay handling is enabled for the task.
+ * @return `true` when the task is created successfully.
+ */
 bool TaskActionViewModel::create(const QString &name,
                                  const QString &description,
                                  const QString &dueAtIso,
@@ -45,6 +59,7 @@ bool TaskActionViewModel::create(const QString &name,
     task.dueAt = dueAt.toUTC();
     task.status = statusEnum.value();
     task.createdAt = QDateTime::currentDateTimeUtc();
+    /// Keep completion metadata consistent with the initial status selected in QML.
     task.completedAt = (task.status == TaskStatus::Completed) ? task.createdAt : QDateTime();
     task.autoDelay = autoDelay;
 
@@ -56,6 +71,12 @@ bool TaskActionViewModel::create(const QString &name,
     return true;
 }
 
+/**
+ * @brief Updates only the status-derived fields for an existing task.
+ * @param id Task identifier.
+ * @param status Numeric status value expected by `TaskStatus`.
+ * @return `true` when the task exists and the status transition is persisted.
+ */
 bool TaskActionViewModel::updateStatus(qint64 id, int status)
 {
     const auto statusEnum = taskStatusFromInt(status);
@@ -93,6 +114,11 @@ bool TaskActionViewModel::updateStatus(qint64 id, int status)
     return true;
 }
 
+/**
+ * @brief Deletes a task by identifier.
+ * @param id Task identifier.
+ * @return `true` when the repository deletion succeeds.
+ */
 bool TaskActionViewModel::remove(qint64 id)
 {
     if (!m_taskRepository->deleteTask(id)) {

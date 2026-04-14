@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 Item {
     id: root
+    // The page only binds UI to the shared VM and forwards user actions without owning business logic.
     readonly property var vm: mainViewModel
 
     ColumnLayout {
@@ -34,6 +35,7 @@ Item {
     }
 
     Component.onCompleted: {
+        // Trigger the initial refresh when the page is first instantiated.
         vm.loadTasks()
     }
 }

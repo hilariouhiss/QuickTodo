@@ -8,6 +8,12 @@
 #include "viewmodel/TaskActionViewModel.h"
 #include "viewmodel/TaskListViewModel.h"
 
+/**
+ * @brief Composes child view-models and forwards their state to the QML root context.
+ * @param appModel Counter-owning application model.
+ * @param taskRepository Repository shared by list and action sub-view-models.
+ * @param parent Owning QObject parent.
+ */
 MainViewModel::MainViewModel(AppModel *appModel, TaskRepository *taskRepository, QObject *parent)
     : QObject(parent)
     , m_appModel(appModel)
@@ -18,6 +24,7 @@ MainViewModel::MainViewModel(AppModel *appModel, TaskRepository *taskRepository,
     Q_ASSERT(m_appModel != nullptr);
     Q_ASSERT(taskRepository != nullptr);
 
+    /// Centralize child signal forwarding so QML only binds to the root view-model.
     connect(m_appModel, &AppModel::counterChanged, this, &MainViewModel::counterChanged);
     connect(m_taskListViewModel,
             &TaskListViewModel::tasksChanged,
@@ -96,6 +103,10 @@ bool MainViewModel::create(const QString &name,
     });
 }
 
+/**
+ * @brief Refreshes the QML task list from the repository.
+ * @return `true` when the latest task snapshot is loaded successfully.
+ */
 bool MainViewModel::loadTasks()
 {
     const bool succeeded = m_taskListViewModel->loadTasks();
@@ -125,6 +136,11 @@ bool MainViewModel::remove(qint64 id)
     return runTaskMutation([&] { return m_taskActionViewModel->remove(id); });
 }
 
+/**
+ * @brief Runs a task mutation and refreshes the list exposed to QML on success.
+ * @param mutation Operation implemented by a child action view-model.
+ * @return `true` when the mutation and subsequent reload both succeed.
+ */
 bool MainViewModel::runTaskMutation(const std::function<bool()> &mutation)
 {
     if (!mutation()) {
@@ -143,6 +159,12 @@ bool MainViewModel::runTaskMutation(const std::function<bool()> &mutation)
     return true;
 }
 
+/**
+ * @brief Normalizes child operation failures into global error state and notifications.
+ * @param operation User-facing operation label.
+ * @param detail Detailed failure reason from the child view-model.
+ * @param notifyUser Whether the UI should surface the failure immediately.
+ */
 void MainViewModel::onChildOperationFailed(const QString &operation,
                                            const QString &detail,
                                            const bool notifyUser)

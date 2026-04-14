@@ -3,6 +3,11 @@
 #include "model/repository/TaskRepository.h"
 #include "model/task/Task.h"
 
+/**
+ * @brief Adapts repository task data into the QVariant payloads consumed by QML.
+ * @param taskRepository Repository used for read operations.
+ * @param parent Owning QObject parent.
+ */
 TaskListViewModel::TaskListViewModel(TaskRepository *taskRepository, QObject *parent)
     : QObject(parent)
     , m_taskRepository(taskRepository)
@@ -15,6 +20,10 @@ QVariantList TaskListViewModel::tasks() const
     return m_tasks;
 }
 
+/**
+ * @brief Loads the latest repository snapshot and replaces the exported QML list.
+ * @return `true` when the refresh succeeds without repository errors.
+ */
 bool TaskListViewModel::loadTasks()
 {
     const QList<Task> tasks = m_taskRepository->listTasks();
@@ -33,11 +42,20 @@ bool TaskListViewModel::loadTasks()
     return true;
 }
 
+/**
+ * @brief Reloads the exposed task list after a successful mutation.
+ * @return `true` when the refresh succeeds.
+ */
 bool TaskListViewModel::reloadAfterMutation()
 {
     return loadTasks();
 }
 
+/**
+ * @brief Retrieves one task and converts it to the QML field map contract.
+ * @param id Task identifier.
+ * @return Task payload for QML, or an empty map when lookup fails.
+ */
 QVariantMap TaskListViewModel::get(qint64 id)
 {
     const auto task = m_taskRepository->getTaskById(id);
@@ -48,6 +66,10 @@ QVariantMap TaskListViewModel::get(qint64 id)
     return taskToMap(task.value());
 }
 
+/**
+ * @brief Forces a refresh and returns the full task list payload for QML.
+ * @return Latest exported task list, or an empty list when loading fails.
+ */
 QVariantList TaskListViewModel::getAll()
 {
     if (!loadTasks()) {
@@ -65,6 +87,11 @@ void TaskListViewModel::setTasks(const QVariantList &tasks)
     emit tasksChanged();
 }
 
+/**
+ * @brief Converts the domain model to the stable field map expected by QML.
+ * @param task Domain task value from the repository layer.
+ * @return Field map using keys defined in `task::field`.
+ */
 QVariantMap TaskListViewModel::taskToMap(const Task &task) const
 {
     QVariantMap data;

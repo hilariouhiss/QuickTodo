@@ -14,6 +14,7 @@
 #include <array>
 
 namespace {
+/// @brief Bootstrap schema used for first-run database initialization.
 constexpr auto kCreateTasksTableSql = R"(
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,21 +28,25 @@ CREATE TABLE IF NOT EXISTS tasks (
 )
 )";
 
-constexpr std::array<const char *, 8> kRequiredColumns
-    = {task::db::Id,
-       task::db::Name,
-       task::db::Description,
-       task::db::DueAt,
-       task::db::Status,
-       task::db::CreatedAt,
-       task::db::CompletedAt,
-       task::db::AutoDelay};
+/// @brief Columns that must exist for the repository layer to function correctly.
+constexpr std::array<const char *, 8> kRequiredColumns = {task::db::Id,
+                                                          task::db::Name,
+                                                          task::db::Description,
+                                                          task::db::DueAt,
+                                                          task::db::Status,
+                                                          task::db::CreatedAt,
+                                                          task::db::CompletedAt,
+                                                          task::db::AutoDelay};
 } // namespace
 
 DatabaseManager::DatabaseManager()
     : m_defaultConnectionName(QStringLiteral("main"))
 {}
 
+/**
+ * @brief Prepares the default SQLite connection and validates the task schema.
+ * @return `true` when the application can safely use the default repository connection.
+ */
 bool DatabaseManager::initializeDefaultDatabase()
 {
     if (!QSqlDatabase::isDriverAvailable(QStringLiteral("QSQLITE"))) {
@@ -73,6 +78,12 @@ bool DatabaseManager::initializeDefaultDatabase()
     return true;
 }
 
+/**
+ * @brief Creates or reuses a named SQLite connection.
+ * @param connectionName Qt SQL connection name.
+ * @param dbFilePath Optional database path; when empty the app data directory is used.
+ * @return Prepared connection object, or an invalid connection when setup fails.
+ */
 QSqlDatabase DatabaseManager::createConnection(const QString &connectionName,
                                                const QString &dbFilePath)
 {
@@ -106,6 +117,10 @@ QSqlDatabase DatabaseManager::defaultConnection() const
     return QSqlDatabase::database(m_defaultConnectionName);
 }
 
+/**
+ * @brief Verifies that the default schema still matches repository expectations.
+ * @return `true` when required columns and indexes are present.
+ */
 bool DatabaseManager::validateSchema()
 {
     QSqlDatabase db = defaultConnection();
@@ -136,6 +151,11 @@ QString DatabaseManager::lastError() const
     return m_lastError;
 }
 
+/**
+ * @brief Ensures the primary `tasks` table exists before repository access.
+ * @param db Open database connection to initialize.
+ * @return `true` when the table exists or is created successfully.
+ */
 bool DatabaseManager::ensureTasksTable(const QSqlDatabase &db)
 {
     QSqlQuery query(db);
@@ -147,6 +167,11 @@ bool DatabaseManager::ensureTasksTable(const QSqlDatabase &db)
     return true;
 }
 
+/**
+ * @brief Checks that the on-disk table still exposes all required columns.
+ * @param db Open database connection to inspect.
+ * @return `true` when every required column is present.
+ */
 bool DatabaseManager::ensureRequiredColumns(const QSqlDatabase &db)
 {
     QSqlQuery query(db);
@@ -172,6 +197,11 @@ bool DatabaseManager::ensureRequiredColumns(const QSqlDatabase &db)
     return true;
 }
 
+/**
+ * @brief Creates the indexes relied on by task status and due-date queries.
+ * @param db Open database connection to mutate.
+ * @return `true` when all required indexes exist.
+ */
 bool DatabaseManager::ensureIndexes(const QSqlDatabase &db)
 {
     QSqlQuery query(db);
@@ -197,6 +227,11 @@ void DatabaseManager::setLastError(const QString &errorText)
     m_lastError = errorText;
 }
 
+/**
+ * @brief Resolves the SQLite file path for a connection request.
+ * @param dbFilePath Explicit path override from the caller.
+ * @return Caller-specified path or the default app-data database path.
+ */
 QString DatabaseManager::resolveDatabasePath(const QString &dbFilePath) const
 {
     if (!dbFilePath.isEmpty()) {

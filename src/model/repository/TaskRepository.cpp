@@ -8,11 +8,17 @@
 #include <utility>
 
 namespace {
+/**
+ * @brief Serializes a timestamp to the ISO8601 format stored in SQLite.
+ */
 QString toIso(const QDateTime &value)
 {
     return value.toString(Qt::ISODate);
 }
 
+/**
+ * @brief Parses a timestamp read from SQLite ISO8601 text columns.
+ */
 QDateTime fromIso(const QString &value)
 {
     return QDateTime::fromString(value, Qt::ISODate);
@@ -23,6 +29,11 @@ TaskRepository::TaskRepository(QString connectionName)
     : m_connectionName(std::move(connectionName))
 {}
 
+/**
+ * @brief Inserts a new task row and backfills generated metadata into `task`.
+ * @param task Mutable task payload to persist.
+ * @return `true` when the row is stored successfully; otherwise `false` and `lastError()`.
+ */
 bool TaskRepository::insertTask(Task &task)
 {
     setLastError(QString());
@@ -40,6 +51,7 @@ bool TaskRepository::insertTask(Task &task)
         createdAt = QDateTime::currentDateTimeUtc();
     }
 
+    /// Persist all timestamps in UTC so QML and storage share one time base.
     QSqlQuery query(database());
     query.prepare(QStringLiteral(
         "INSERT INTO tasks(name, description, due_at, status, created_at, completed_at, "
@@ -65,6 +77,11 @@ bool TaskRepository::insertTask(Task &task)
     return true;
 }
 
+/**
+ * @brief Loads a single task by primary key.
+ * @param id Task identifier.
+ * @return Parsed task on success; otherwise `std::nullopt` and `lastError()`.
+ */
 std::optional<Task> TaskRepository::getTaskById(qint64 id) const
 {
     setLastError(QString());
@@ -89,6 +106,10 @@ std::optional<Task> TaskRepository::getTaskById(qint64 id) const
     return parseTaskFromQuery(query);
 }
 
+/**
+ * @brief Lists all tasks ordered by newest identifier first.
+ * @return Parsed task collection. Invalid rows are skipped after recording `lastError()`.
+ */
 QList<Task> TaskRepository::listTasks() const
 {
     setLastError(QString());
@@ -114,6 +135,11 @@ QList<Task> TaskRepository::listTasks() const
     return result;
 }
 
+/**
+ * @brief Persists the full task snapshot for an existing row.
+ * @param task Task payload containing the target `id`.
+ * @return `true` when an existing row is updated; otherwise `false`.
+ */
 bool TaskRepository::updateTask(const Task &task)
 {
     setLastError(QString());
@@ -155,6 +181,11 @@ bool TaskRepository::updateTask(const Task &task)
     return true;
 }
 
+/**
+ * @brief Removes a task row by identifier.
+ * @param id Task identifier.
+ * @return `true` when a row is deleted; otherwise `false`.
+ */
 bool TaskRepository::deleteTask(qint64 id)
 {
     setLastError(QString());
@@ -189,6 +220,10 @@ QString TaskRepository::lastError() const
     return m_lastError;
 }
 
+/**
+ * @brief Verifies that the configured Qt SQL connection exists and is open.
+ * @return `true` when repository queries can be executed safely.
+ */
 bool TaskRepository::ensureDatabaseAvailable() const
 {
     if (!QSqlDatabase::contains(m_connectionName)) {
@@ -220,8 +255,14 @@ void TaskRepository::setLastError(const QString &errorText) const
     m_lastError = errorText;
 }
 
+/**
+ * @brief Maps the current SQL result row into the `Task` domain model.
+ * @param query Query positioned on a valid row.
+ * @return Parsed task, or `std::nullopt` when persisted enum values are invalid.
+ */
 std::optional<Task> TaskRepository::parseTaskFromQuery(const QSqlQuery &query) const
 {
+    /// Convert one result row into the domain model and reject unknown status values.
     Task task;
     task.id = query.value(QString::fromLatin1(task::db::Id)).toLongLong();
     task.name = query.value(QString::fromLatin1(task::db::Name)).toString();

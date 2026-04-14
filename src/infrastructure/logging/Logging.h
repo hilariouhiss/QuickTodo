@@ -6,8 +6,19 @@
 #include <utility>
 
 namespace app::logging {
+/**
+ * @brief Configures the shared spdlog logger and its sinks.
+ */
 void initialize();
+
+/**
+ * @brief Routes Qt logging through the shared spdlog logger.
+ */
 void installQtMessageHandler();
+
+/**
+ * @brief Flushes and tears down global logging state.
+ */
 void shutdown();
 
 template<typename... Args>

@@ -16,6 +16,9 @@
 namespace {
 bool g_initialized = false;
 
+/**
+ * @brief Maps the environment-configured log level text to a spdlog level.
+ */
 spdlog::level::level_enum parseLogLevel(const QByteArray &levelValue)
 {
     const std::string level = levelValue.toLower().toStdString();
@@ -43,6 +46,9 @@ spdlog::level::level_enum parseLogLevel(const QByteArray &levelValue)
     return spdlog::level::info;
 }
 
+/**
+ * @brief Resolves the default application log level from `APP_LOG_LEVEL`.
+ */
 spdlog::level::level_enum resolveDefaultLevel()
 {
     const QByteArray envLevel = qgetenv("APP_LOG_LEVEL");
@@ -52,6 +58,9 @@ spdlog::level::level_enum resolveDefaultLevel()
     return parseLogLevel(envLevel);
 }
 
+/**
+ * @brief Forwards Qt message handler output into the shared spdlog pipeline.
+ */
 void qtMessageToSpdlog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     const QByteArray localMsg = msg.toLocal8Bit();
@@ -80,6 +89,9 @@ void qtMessageToSpdlog(QtMsgType type, const QMessageLogContext &context, const 
 }
 } // namespace
 
+/**
+ * @brief Configures the process-wide spdlog logger and file/console sinks.
+ */
 void app::logging::initialize()
 {
     if (g_initialized) {
@@ -88,6 +100,7 @@ void app::logging::initialize()
 
     std::filesystem::create_directories("logs");
 
+    /// Keep console output for local development while retaining recent file history.
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     auto fileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/app.log",
                                                                            5 * 1024 * 1024,
@@ -103,11 +116,17 @@ void app::logging::initialize()
     g_initialized = true;
 }
 
+/**
+ * @brief Routes Qt internal logging through the same spdlog sinks as app logs.
+ */
 void app::logging::installQtMessageHandler()
 {
     qInstallMessageHandler(qtMessageToSpdlog);
 }
 
+/**
+ * @brief Restores the default Qt handler and flushes the shared logger.
+ */
 void app::logging::shutdown()
 {
     qInstallMessageHandler(nullptr);
