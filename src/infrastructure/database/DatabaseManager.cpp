@@ -51,7 +51,7 @@ bool DatabaseManager::initializeDefaultDatabase()
 {
     if (!QSqlDatabase::isDriverAvailable(QStringLiteral("QSQLITE"))) {
         setLastError(QStringLiteral("QSQLITE 驱动不可用"));
-        app::logging::error("QSQLITE driver is unavailable");
+        logging::error("QSQLITE driver is unavailable");
         return false;
     }
 
@@ -62,7 +62,7 @@ bool DatabaseManager::initializeDefaultDatabase()
 
     if (!db.isOpen() && !db.open()) {
         setLastError(db.lastError().text());
-        app::logging::error("Open default database failed: {}", m_lastError.toStdString());
+        logging::error("Open default database failed: {}", m_lastError.toStdString());
         return false;
     }
 
@@ -74,7 +74,7 @@ bool DatabaseManager::initializeDefaultDatabase()
         return false;
     }
 
-    app::logging::info("Database initialized: {}", db.databaseName().toStdString());
+    logging::info("Database initialized: {}", db.databaseName().toStdString());
     return true;
 }
 
@@ -93,19 +93,19 @@ QSqlDatabase DatabaseManager::createConnection(const QString &connectionName,
 
     const QString filePath = resolveDatabasePath(dbFilePath);
     const QFileInfo fileInfo(filePath);
-    QDir parentDir(fileInfo.absolutePath());
-    if (!parentDir.exists() && !parentDir.mkpath(QStringLiteral("."))) {
+    if (const QDir parentDir(fileInfo.absolutePath());
+        !parentDir.exists() && !parentDir.mkpath(QStringLiteral("."))) {
         setLastError(QStringLiteral("数据库目录创建失败: %1").arg(parentDir.absolutePath()));
-        app::logging::error("Create database directory failed: {}",
-                            parentDir.absolutePath().toStdString());
+        logging::error("Create database directory failed: {}",
+                       parentDir.absolutePath().toStdString());
         return {};
     }
 
     QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), connectionName);
     db.setDatabaseName(filePath);
-    app::logging::info("Database connection prepared: name={}, path={}",
-                       connectionName.toStdString(),
-                       filePath.toStdString());
+    logging::info("Database connection prepared: name={}, path={}",
+                  connectionName.toStdString(),
+                  filePath.toStdString());
     return db;
 }
 
@@ -142,7 +142,7 @@ bool DatabaseManager::validateSchema()
         return false;
     }
 
-    app::logging::info("Database schema validation passed");
+    logging::info("Database schema validation passed");
     return true;
 }
 
@@ -158,10 +158,9 @@ QString DatabaseManager::lastError() const
  */
 bool DatabaseManager::ensureTasksTable(const QSqlDatabase &db)
 {
-    QSqlQuery query(db);
-    if (!query.exec(QString::fromUtf8(kCreateTasksTableSql))) {
+    if (QSqlQuery query(db); !query.exec(QString::fromUtf8(kCreateTasksTableSql))) {
         setLastError(query.lastError().text());
-        app::logging::error("Create tasks table failed: {}", m_lastError.toStdString());
+        logging::error("Create tasks table failed: {}", m_lastError.toStdString());
         return false;
     }
     return true;
@@ -177,7 +176,7 @@ bool DatabaseManager::ensureRequiredColumns(const QSqlDatabase &db)
     QSqlQuery query(db);
     if (!query.exec(QStringLiteral("PRAGMA table_info(tasks)"))) {
         setLastError(query.lastError().text());
-        app::logging::error("Read tasks schema failed: {}", m_lastError.toStdString());
+        logging::error("Read tasks schema failed: {}", m_lastError.toStdString());
         return false;
     }
 
@@ -189,7 +188,7 @@ bool DatabaseManager::ensureRequiredColumns(const QSqlDatabase &db)
     for (const auto *column : kRequiredColumns) {
         if (!columns.contains(QLatin1String(column))) {
             setLastError(QStringLiteral("任务表缺失字段: %1").arg(QLatin1String(column)));
-            app::logging::error("Database schema missing column: {}", column);
+            logging::error("Database schema missing column: {}", column);
             return false;
         }
     }
@@ -208,14 +207,14 @@ bool DatabaseManager::ensureIndexes(const QSqlDatabase &db)
     if (!query.exec(
             QStringLiteral("CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)"))) {
         setLastError(query.lastError().text());
-        app::logging::error("Create status index failed: {}", m_lastError.toStdString());
+        logging::error("Create status index failed: {}", m_lastError.toStdString());
         return false;
     }
 
     if (!query.exec(
             QStringLiteral("CREATE INDEX IF NOT EXISTS idx_tasks_due_at ON tasks(due_at)"))) {
         setLastError(query.lastError().text());
-        app::logging::error("Create due_at index failed: {}", m_lastError.toStdString());
+        logging::error("Create due_at index failed: {}", m_lastError.toStdString());
         return false;
     }
 
@@ -232,12 +231,12 @@ void DatabaseManager::setLastError(const QString &errorText)
  * @param dbFilePath Explicit path override from the caller.
  * @return Caller-specified path or the default app-data database path.
  */
-QString DatabaseManager::resolveDatabasePath(const QString &dbFilePath) const
+QString DatabaseManager::resolveDatabasePath(const QString &dbFilePath)
 {
     if (!dbFilePath.isEmpty()) {
         return dbFilePath;
     }
 
     const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    return appDataDir + QStringLiteral("/tasks.db");
+    return appDataDir + QStringLiteral("/app.db");
 }

@@ -47,7 +47,7 @@ MainViewModel::MainViewModel(AppModel *appModel, TaskRepository *taskRepository,
             this,
             &MainViewModel::onChildOperationFailed);
 
-    app::logging::info("MainViewModel initialized");
+    logging::info("MainViewModel initialized");
 }
 
 int MainViewModel::counter() const
@@ -83,13 +83,13 @@ QVariantMap MainViewModel::taskFields() const
 void MainViewModel::incrementCounter()
 {
     m_appModel->setCounter(m_appModel->counter() + 1);
-    app::logging::info("Counter incremented to {}", m_appModel->counter());
+    logging::info("Counter incremented to {}", m_appModel->counter());
 }
 
 void MainViewModel::resetCounter()
 {
     m_appModel->setCounter(0);
-    app::logging::info("Counter reset");
+    logging::info("Counter reset");
 }
 
 bool MainViewModel::create(const QString &name,
@@ -149,13 +149,13 @@ bool MainViewModel::runTaskMutation(const std::function<bool()> &mutation)
 
     const bool refreshed = m_taskListViewModel->reloadAfterMutation();
     if (!refreshed) {
-        app::logging::error("Reload tasks failed after mutation: {}",
+        logging::error("Reload tasks failed after mutation: {}",
                             m_globalStateViewModel->lastError().toStdString());
         return false;
     }
 
     m_globalStateViewModel->clearError();
-    app::logging::info("Task mutation succeeded and routed by MainViewModel");
+    logging::info("Task mutation succeeded and routed by MainViewModel");
     return true;
 }
 
@@ -170,6 +170,6 @@ void MainViewModel::onChildOperationFailed(const QString &operation,
                                            const bool notifyUser)
 {
     m_globalStateViewModel->reportOperationError(operation, detail, notifyUser);
-    app::logging::error("Child VM operation failed: {}",
+    logging::error("Child VM operation failed: {}",
                         m_globalStateViewModel->lastError().toStdString());
 }

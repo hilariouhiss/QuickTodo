@@ -5,7 +5,7 @@
 
 #include <utility>
 
-namespace app::logging {
+namespace logging {
 /**
  * @brief Configures the shared spdlog logger and its sinks.
  */
@@ -22,32 +22,32 @@ void installQtMessageHandler();
 void shutdown();
 
 template<typename... Args>
-inline void debug(spdlog::format_string_t<Args...> fmt, Args &&...args)
+void debug(spdlog::format_string_t<Args...> fmt, Args &&...args)
 {
     spdlog::debug(fmt, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void info(spdlog::format_string_t<Args...> fmt, Args &&...args)
+void info(spdlog::format_string_t<Args...> fmt, Args &&...args)
 {
     spdlog::info(fmt, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void warn(spdlog::format_string_t<Args...> fmt, Args &&...args)
+void warn(spdlog::format_string_t<Args...> fmt, Args &&...args)
 {
     spdlog::warn(fmt, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void error(spdlog::format_string_t<Args...> fmt, Args &&...args)
+void error(spdlog::format_string_t<Args...> fmt, Args &&...args)
 {
     spdlog::error(fmt, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void critical(spdlog::format_string_t<Args...> fmt, Args &&...args)
+void critical(spdlog::format_string_t<Args...> fmt, Args &&...args)
 {
     spdlog::critical(fmt, std::forward<Args>(args)...);
 }
-} // namespace app::logging
+} // namespace logging

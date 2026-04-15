@@ -9,7 +9,9 @@
 class DatabaseManager final
 {
 public:
-    /// @brief Creates a manager for the default application database connection.
+    /**
+     * @brief Creates a manager for the default application database connection.
+     */
     DatabaseManager();
 
     /**
@@ -50,7 +52,7 @@ private:
     bool ensureRequiredColumns(const QSqlDatabase &db);
     bool ensureIndexes(const QSqlDatabase &db);
     void setLastError(const QString &errorText);
-    QString resolveDatabasePath(const QString &dbFilePath) const;
+    static QString resolveDatabasePath(const QString &dbFilePath);
     QString m_defaultConnectionName;
     QString m_lastError;
 };

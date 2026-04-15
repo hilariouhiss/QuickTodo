@@ -14,9 +14,9 @@
  */
 int main(int argc, char *argv[])
 {
-    app::logging::initialize();
-    app::logging::installQtMessageHandler();
-    app::logging::info("Application bootstrapping");
+    logging::initialize();
+    logging::installQtMessageHandler();
+    logging::info("Application bootstrapping");
 
     QGuiApplication app(argc, argv);
 
@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
     AppContainer appContainer;
     // Surface database initialization state before exposing view models to QML.
     if (appContainer.databaseReady()) {
-        app::logging::info("Database ready");
+        logging::info("Database ready");
     } else {
-        app::logging::error("Database not ready: {}", appContainer.databaseError().toStdString());
+        logging::error("Database not ready: {}", appContainer.databaseError().toStdString());
     }
     // Exit asynchronously if the root QML object fails to instantiate.
     QObject::connect(
@@ -38,12 +38,12 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("mainViewModel", appContainer.mainViewModel());
-    app::logging::info("Loading QML module: quick_todo/Main");
+    logging::info("Loading QML module: quick_todo/Main");
     engine.loadFromModule("quick_todo", "Main");
-    app::logging::info("Application started");
+    logging::info("Application started");
 
     const int exitCode = QCoreApplication::exec();
-    app::logging::info("Application exiting with code {}", exitCode);
-    app::logging::shutdown();
+    logging::info("Application exiting with code {}", exitCode);
+    logging::shutdown();
     return exitCode;
 }

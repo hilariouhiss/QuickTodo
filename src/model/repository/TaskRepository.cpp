@@ -1,6 +1,7 @@
 #include "model/repository/TaskRepository.h"
 
 #include <QDateTime>
+#include <QMetaType>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
@@ -64,7 +65,7 @@ bool TaskRepository::insertTask(Task &task)
     query.bindValue(QStringLiteral(":created_at"), toIso(createdAt.toUTC()));
     query.bindValue(QStringLiteral(":completed_at"),
                     task.completedAt.isValid() ? QVariant(toIso(task.completedAt.toUTC()))
-                                               : QVariant(QVariant::String));
+                                               : QVariant(QMetaType::fromType<QString>()));
     query.bindValue(QStringLiteral(":auto_delay"), task.autoDelay ? 1 : 0);
 
     if (!query.exec()) {
@@ -164,7 +165,7 @@ bool TaskRepository::updateTask(const Task &task)
     query.bindValue(QStringLiteral(":created_at"), toIso(task.createdAt.toUTC()));
     query.bindValue(QStringLiteral(":completed_at"),
                     task.completedAt.isValid() ? QVariant(toIso(task.completedAt.toUTC()))
-                                               : QVariant(QVariant::String));
+                                               : QVariant(QMetaType::fromType<QString>()));
     query.bindValue(QStringLiteral(":auto_delay"), task.autoDelay ? 1 : 0);
     query.bindValue(QStringLiteral(":id"), task.id);
 
@@ -186,7 +187,7 @@ bool TaskRepository::updateTask(const Task &task)
  * @param id Task identifier.
  * @return `true` when a row is deleted; otherwise `false`.
  */
-bool TaskRepository::deleteTask(qint64 id)
+bool TaskRepository::deleteTask(const qint64 id)
 {
     setLastError(QString());
     if (!ensureDatabaseAvailable()) {

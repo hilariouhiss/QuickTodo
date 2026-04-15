@@ -4,21 +4,20 @@
 
 AppContainer::AppContainer()
     : m_appModel(nullptr)
-    , m_databaseManager()
     , m_taskRepository(QStringLiteral("main"))
     , m_mainViewModel(&m_appModel, &m_taskRepository, nullptr)
 {
     m_databaseReady = m_databaseManager.initializeDefaultDatabase();
     if (!m_databaseReady) {
         m_databaseError = m_databaseManager.lastError();
-        app::logging::error("Database bootstrap failed: {}", m_databaseError.toStdString());
+        logging::error("Database bootstrap failed: {}", m_databaseError.toStdString());
     } else {
         m_databaseError.clear();
-        app::logging::info("Database bootstrap and validation completed");
+        logging::info("Database bootstrap and validation completed");
     }
 
-    app::logging::info("MainViewModel orchestrates child view models");
-    app::logging::info("AppContainer initialized");
+    logging::info("MainViewModel orchestrates child view models");
+    logging::info("AppContainer initialized");
 }
 
 MainViewModel *AppContainer::mainViewModel()

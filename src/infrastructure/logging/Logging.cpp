@@ -61,7 +61,7 @@ spdlog::level::level_enum resolveDefaultLevel()
 /**
  * @brief Forwards Qt message handler output into the shared spdlog pipeline.
  */
-void qtMessageToSpdlog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void qtMessageToSpdlog(const QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     const QByteArray localMsg = msg.toLocal8Bit();
     const std::string_view payload(localMsg.constData(), static_cast<size_t>(localMsg.size()));
@@ -92,7 +92,7 @@ void qtMessageToSpdlog(QtMsgType type, const QMessageLogContext &context, const 
 /**
  * @brief Configures the process-wide spdlog logger and file/console sinks.
  */
-void app::logging::initialize()
+void logging::initialize()
 {
     if (g_initialized) {
         return;
@@ -101,10 +101,10 @@ void app::logging::initialize()
     std::filesystem::create_directories("logs");
 
     /// Keep console output for local development while retaining recent file history.
-    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto fileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/app.log",
-                                                                           5 * 1024 * 1024,
-                                                                           3);
+    const auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    const auto fileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/app.log",
+                                                                                 5 * 1024 * 1024,
+                                                                                 3);
     std::vector<spdlog::sink_ptr> sinks{consoleSink, fileSink};
 
     auto logger = std::make_shared<spdlog::logger>("app", sinks.begin(), sinks.end());
@@ -119,7 +119,7 @@ void app::logging::initialize()
 /**
  * @brief Routes Qt internal logging through the same spdlog sinks as app logs.
  */
-void app::logging::installQtMessageHandler()
+void logging::installQtMessageHandler()
 {
     qInstallMessageHandler(qtMessageToSpdlog);
 }
@@ -127,7 +127,7 @@ void app::logging::installQtMessageHandler()
 /**
  * @brief Restores the default Qt handler and flushes the shared logger.
  */
-void app::logging::shutdown()
+void logging::shutdown()
 {
     qInstallMessageHandler(nullptr);
     spdlog::shutdown();
